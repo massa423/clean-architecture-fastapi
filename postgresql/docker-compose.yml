@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:13.1-alpine
+    container_name: postgresql
+    ports:
+      - '15432:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - PGPASSWORD=password
+      - POSTGRES_DB=testdb
+      - DATABASE_HOST=localhost
