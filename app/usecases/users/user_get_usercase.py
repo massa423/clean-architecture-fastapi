@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from typing import Union, List, Optional
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, SecretStr, parse_obj_as
 from datetime import datetime
 
 from app.domains.user import User
@@ -14,7 +14,7 @@ class UserOutputData(BaseModel):
 
     id: int
     name: str
-    password: str
+    password: SecretStr
     email: EmailStr
     created_at: datetime
     updated_at: datetime
@@ -62,16 +62,7 @@ class UserGetInteractorImpl(UserGetInteractor):
         response = []
 
         for d in data:
-            response.append(
-                UserOutputData(
-                    id=d["id"],
-                    name=d["name"],
-                    email=d["email"],
-                    password=d["password"],
-                    created_at=d["created_at"],
-                    updated_at=d["updated_at"],
-                )
-            )
+            response.append(parse_obj_as(UserOutputData, d))
 
         return response
 
@@ -82,13 +73,6 @@ class UserGetInteractorImpl(UserGetInteractor):
         user = User(id=id)
         data = injector.user_repository().find_user_by_id(user.id)
 
-        response = UserOutputData(
-            id=data["id"],
-            name=data["name"],
-            email=data["email"],
-            password=data["password"],
-            created_at=data["created_at"],
-            updated_at=data["updated_at"],
-        )
+        response = parse_obj_as(UserOutputData, data)
 
         return response

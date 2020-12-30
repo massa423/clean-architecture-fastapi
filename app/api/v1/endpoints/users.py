@@ -1,5 +1,6 @@
 from fastapi import APIRouter, status, Path
 from fastapi.exceptions import HTTPException
+from pydantic import ValidationError
 from typing import List
 
 from app.usecases.users.user_get_usercase import UserOutputData as UserGetOutputData
@@ -10,7 +11,12 @@ from app.usecases.users.user_create_usecase import (
 from app.usecases.users.user_delete_usecase import (
     UserOutputData as UserDeleteOutputData,
 )
+from app.usecases.users.user_update_usecase import (
+    UserInputData as UserUpdateInputData,
+    UserOutputData as UserUpdateOutputData,
+)
 from app.core.usecase_injector import injector
+from app.core.config import settings
 from app.exceptions.exception import DuplicateError, NoContentError
 
 router = APIRouter()
@@ -65,7 +71,7 @@ def read_users() -> UserGetOutputData:
     },
 )
 def read_user(
-    id: int = Path(..., title="The ID of the user.", ge=1)
+    id: int = Path(..., title="The ID of the user.", ge=settings.ID_MIN)
 ) -> UserGetOutputData:
     """
     read_user
@@ -133,12 +139,68 @@ def create_user(user: UserCreateInputputData) -> UserCreateOutputData:
     return content
 
 
-@router.put("/{id}")
-def update_user():
+@router.put(
+    "/{id}",
+    response_model=UserUpdateOutputData,
+    responses={
+        204: {
+            "description": "User is updated, but data fetch is failed.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "User(name) is updated, but data fetch is failed."
+                    }
+                }
+            },
+        },
+        400: {
+            "description": "Bad Request.",
+            "content": {
+                "application/json": {"example": {"detail": "Invalid request body."}}
+            },
+        },
+        409: {
+            "description": "User of email is already exists.",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "User or email is already exists: name"}
+                }
+            },
+        },
+        500: {
+            "description": "Update user is failed",
+            "content": {
+                "application/json": {"example": {"detail": "Update user is failed."}}
+            },
+        },
+    },
+)
+def update_user(
+    user: UserUpdateInputData,
+    id: int = Path(..., title="The ID of the user.", ge=settings.ID_MIN),
+) -> UserUpdateOutputData:
     """
     update_user
     """
-    pass
+    try:
+        content = injector.user_update_interactor().handle(id, user)
+    except DuplicateError:
+        raise HTTPException(
+            status_code=409, detail=f"User or email is already exists: {user}"
+        )
+    except NoContentError:
+        raise HTTPException(
+            status_code=204,
+            detail=f"User({user}) is created, but data fetch is failed.",
+        )
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=500, detail="Update user is failed.")
+
+    return content
 
 
 @router.delete(
@@ -160,7 +222,7 @@ def update_user():
     },
 )
 def delete_user(
-    id: int = Path(..., title="The ID of the user.", ge=1)
+    id: int = Path(..., title="The ID of the user.", ge=settings.ID_MIN)
 ) -> UserDeleteOutputData:
     """
     delete_user

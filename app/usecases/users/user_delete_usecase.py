@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, SecretStr, parse_obj_as
 from datetime import datetime
 from typing import Optional
 
@@ -14,7 +14,7 @@ class UserOutputData(BaseModel):
 
     id: int
     name: str
-    password: str
+    password: SecretStr
     email: EmailStr
     created_at: datetime
     updated_at: datetime
@@ -46,13 +46,6 @@ class UserDeleteInteractorImpl(UserDeleteInteractor):
 
         data = injector.user_repository().delete_user(user.id)
 
-        response = UserOutputData(
-            id=data["id"],
-            name=data["name"],
-            email=data["email"],
-            password=data["password"],
-            created_at=data["created_at"],
-            updated_at=data["updated_at"],
-        )
+        response = parse_obj_as(UserOutputData, data)
 
         return response

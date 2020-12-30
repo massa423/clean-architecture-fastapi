@@ -42,6 +42,13 @@ class UserRepository(metaclass=ABCMeta):
         """
         raise NotImplementedError
 
+    @abstractmethod
+    def update_user(self, data_to_be_updated: Dict) -> Optional[Dict]:
+        """
+        update_user
+        """
+        raise NotImplementedError
+
 
 class UserRepositoryImpl(UserRepository):
     """
@@ -69,16 +76,8 @@ class UserRepositoryImpl(UserRepository):
         response = []
 
         for u in user:
-            response.append(
-                {
-                    "id": u.id,
-                    "name": u.name,
-                    "password": u.password,
-                    "email": u.email,
-                    "created_at": u.created_at,
-                    "updated_at": u.updated_at,
-                }
-            )
+            response.append(self.__convert_schema_obj_to_dict(u))
+
         return response
 
     def find_user_by_id(self, id: int) -> Optional[Dict]:
@@ -98,15 +97,7 @@ class UserRepositoryImpl(UserRepository):
             print(f"id={id} is not found.")
             raise NoContentError
 
-        response = {
-            "id": user.id,
-            "name": user.name,
-            "password": user.password,
-            "email": user.email,
-            "created_at": user.created_at,
-            "updated_at": user.updated_at,
-        }
-        return response
+        return self.__convert_schema_obj_to_dict(user)
 
     def create_user(self, name: str, password: str, email: str) -> Optional[Dict]:
         """
@@ -150,15 +141,7 @@ class UserRepositoryImpl(UserRepository):
         finally:
             db.session.close()
 
-        response = {
-            "id": created_user.id,
-            "name": created_user.name,
-            "password": created_user.password,
-            "email": created_user.email,
-            "created_at": created_user.created_at,
-            "updated_at": created_user.updated_at,
-        }
-        return response
+        return self.__convert_schema_obj_to_dict(created_user)
 
     def delete_user(self, id: int) -> Optional[Dict]:
         """
@@ -185,12 +168,54 @@ class UserRepositoryImpl(UserRepository):
         finally:
             db.session.close()
 
-        response = {
-            "id": deleted_user.id,
-            "name": deleted_user.name,
-            "password": deleted_user.password,
-            "email": deleted_user.email,
-            "created_at": deleted_user.created_at,
-            "updated_at": deleted_user.updated_at,
+        return self.__convert_schema_obj_to_dict(deleted_user)
+
+    def update_user(self, data_to_be_updated: Dict) -> Optional[Dict]:
+        """
+        update_user
+        """
+        now = datetime.now()
+        data_to_be_updated["updated_at"] = now
+
+        try:
+            db.session.query(User).filter(User.id == data_to_be_updated["id"]).update(
+                data_to_be_updated
+            )
+            db.session.commit()
+        except IntegrityError as e:
+            db.session.rollback()
+            print(e)
+
+            raise DuplicateError
+        except Exception as e:
+            print(e)
+            raise
+        finally:
+            db.session.close()
+
+        try:
+            updated_user = (
+                db.session.query(User)
+                .filter(User.id == data_to_be_updated["id"])
+                .first()
+            )
+        except Exception as e:
+            print(e)
+            raise NoContentError
+        finally:
+            db.session.close()
+
+        return self.__convert_schema_obj_to_dict(updated_user)
+
+    def __convert_schema_obj_to_dict(self, schema: User) -> Dict:
+        """
+        行オブジェクトを辞書型に変換する。
+        """
+        return {
+            "id": schema.id,
+            "name": schema.name,
+            "password": schema.password,
+            "email": schema.email,
+            "created_at": schema.created_at,
+            "updated_at": schema.updated_at,
         }
-        return response

@@ -10,6 +10,10 @@ from app.usecases.users.user_delete_usecase import (
     UserDeleteInteractor,
     UserDeleteInteractorImpl,
 )
+from app.usecases.users.user_update_usecase import (
+    UserUpdateInteractor,
+    UserUpdateInteractorImpl,
+)
 
 
 class UserCaseInjector:
@@ -34,6 +38,12 @@ class UserCaseInjector:
         user_delete_interactor
         """
         return UserDeleteInteractorImpl()
+
+    def user_update_interactor(self) -> UserUpdateInteractor:
+        """
+        user_update_interactor
+        """
+        return UserUpdateInteractorImpl()
 
 
 injector = UserCaseInjector()
