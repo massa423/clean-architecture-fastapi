@@ -7,7 +7,7 @@ class User(BaseModel):
     User
     """
 
-    id: int
+    id: Optional[int]
     name: Optional[str]
     password: Optional[str]
     email: Optional[EmailStr]

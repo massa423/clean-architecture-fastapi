@@ -13,9 +13,9 @@ class User(Base):  # type: ignore
 
     __tablename__ = "users"
     id = Column("id", Integer(), primary_key=True, autoincrement=True)
-    name = Column("name", String(256), nullable=False)
+    name = Column("name", String(256), nullable=False, unique=True, index=True)
     password = Column("password", String(256), nullable=False)
-    email = Column("email", String(256), nullable=False)
+    email = Column("email", String(256), nullable=False, unique=True)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=False)
 

@@ -1,8 +1,12 @@
 from abc import ABCMeta, abstractmethod
 from typing import Dict, List, Optional
+from datetime import datetime
 
 from app.interfaces.gateways import db
 from app.interfaces.gateways.schema import User
+from app.exceptions.exception import DuplicateError, NoContentError
+
+from sqlalchemy.exc import IntegrityError
 
 
 class UserRepository(metaclass=ABCMeta):
@@ -24,6 +28,13 @@ class UserRepository(metaclass=ABCMeta):
         """
         raise NotImplementedError
 
+    @abstractmethod
+    def create_user(self, name: str, password: str, email: str) -> Optional[Dict]:
+        """
+        create_user
+        """
+        raise NotImplementedError
+
 
 class UserRepositoryImpl(UserRepository):
     """
@@ -34,13 +45,22 @@ class UserRepositoryImpl(UserRepository):
         """
         find_users
         """
-        user = db.session.query(User).all()
-        db.session.close()
+        user: User = None
 
-        if user is None:
-            return None
+        try:
+            user = db.session.query(User).all()
+        except Exception as e:
+            print(e)
+            raise
+        finally:
+            db.session.close()
+
+        if not user:
+            print("Users are not found.")
+            raise NoContentError
 
         response = []
+
         for u in user:
             response.append(
                 {
@@ -59,11 +79,17 @@ class UserRepositoryImpl(UserRepository):
         find_user_by_id
         """
 
-        user = db.session.query(User).filter(User.id == id).first()
-        db.session.close()
+        try:
+            user = db.session.query(User).filter(User.id == id).first()
+        except Exception as e:
+            print(e)
+            raise
+        finally:
+            db.session.close()
 
         if user is None:
-            return None
+            print(f"id={id} is not found.")
+            raise NoContentError
 
         response = {
             "id": user.id,
@@ -72,5 +98,58 @@ class UserRepositoryImpl(UserRepository):
             "email": user.email,
             "created_at": user.created_at,
             "updated_at": user.updated_at,
+        }
+        return response
+
+    def create_user(self, name: str, password: str, email: str) -> Optional[Dict]:
+        """
+        create_user
+        """
+
+        now = datetime.now()
+        created_user = None
+
+        user = User(
+            name=name,
+            password=password,
+            email=email,
+            created_at=now,
+            updated_at=now,
+        )
+
+        try:
+            db.session.add(user)
+            db.session.commit()
+        except IntegrityError as e:
+            db.session.rollback()
+            print(e)
+
+            raise DuplicateError
+        except Exception as e:
+            print(e)
+            raise
+        finally:
+            db.session.close()
+
+        try:
+            created_user = (
+                db.session.query(User)
+                .filter(User.name == name)
+                .order_by(User.id.desc())
+                .first()
+            )
+        except Exception as e:
+            print(e)
+            raise NoContentError
+        finally:
+            db.session.close()
+
+        response = {
+            "id": created_user.id,
+            "name": created_user.name,
+            "password": created_user.password,
+            "email": created_user.email,
+            "created_at": created_user.created_at,
+            "updated_at": created_user.updated_at,
         }
         return response

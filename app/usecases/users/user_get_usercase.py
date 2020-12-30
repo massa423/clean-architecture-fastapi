@@ -59,9 +59,6 @@ class UserGetInteractorImpl(UserGetInteractor):
         """
         data = injector.user_repository().find_users()
 
-        if not data:
-            return None
-
         response = []
 
         for d in data:
@@ -84,9 +81,6 @@ class UserGetInteractorImpl(UserGetInteractor):
         """
         user = User(id=id)
         data = injector.user_repository().find_user_by_id(user.id)
-
-        if not data:
-            return None
 
         response = UserOutputData(
             id=data["id"],

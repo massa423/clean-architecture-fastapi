@@ -3,5 +3,3 @@ __pycache__/
 .mypy_cache/
 .python-version
 .DS_Store
-
-init_db.py
