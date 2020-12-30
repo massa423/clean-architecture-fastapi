@@ -2,8 +2,14 @@ from fastapi import APIRouter, status, Path
 from fastapi.exceptions import HTTPException
 from typing import List
 
-from app.usecases.users.user_get_usercase import UserOutputData
-from app.usecases.users.user_create_usecase import UserInputData
+from app.usecases.users.user_get_usercase import UserOutputData as UserGetOutputData
+from app.usecases.users.user_create_usecase import (
+    UserInputData as UserCreateInputputData,
+    UserOutputData as UserCreateOutputData,
+)
+from app.usecases.users.user_delete_usecase import (
+    UserOutputData as UserDeleteOutputData,
+)
 from app.core.usecase_injector import injector
 from app.exceptions.exception import DuplicateError, NoContentError
 
@@ -12,7 +18,7 @@ router = APIRouter()
 
 @router.get(
     "/",
-    response_model=List[UserOutputData],
+    response_model=List[UserGetOutputData],
     responses={
         404: {
             "description": "Users not found",
@@ -26,7 +32,7 @@ router = APIRouter()
         },
     },
 )
-def read_users() -> UserOutputData:
+def read_users() -> UserGetOutputData:
     """
     read_users
     """
@@ -42,7 +48,7 @@ def read_users() -> UserOutputData:
 
 @router.get(
     "/{id}",
-    response_model=UserOutputData,
+    response_model=UserGetOutputData,
     responses={
         404: {
             "description": "User not found",
@@ -58,7 +64,9 @@ def read_users() -> UserOutputData:
         },
     },
 )
-def read_user(id: int = Path(..., title="The ID of the user.", ge=1)) -> UserOutputData:
+def read_user(
+    id: int = Path(..., title="The ID of the user.", ge=1)
+) -> UserGetOutputData:
     """
     read_user
     """
@@ -74,7 +82,7 @@ def read_user(id: int = Path(..., title="The ID of the user.", ge=1)) -> UserOut
 
 @router.post(
     "/{name}",
-    response_model=UserOutputData,
+    response_model=UserCreateOutputData,
     status_code=status.HTTP_201_CREATED,
     responses={
         204: {
@@ -103,7 +111,7 @@ def read_user(id: int = Path(..., title="The ID of the user.", ge=1)) -> UserOut
         },
     },
 )
-def create_user(user: UserInputData) -> UserOutputData:
+def create_user(user: UserCreateInputputData) -> UserCreateOutputData:
     """
     create_user
     """
@@ -126,16 +134,42 @@ def create_user(user: UserInputData) -> UserOutputData:
 
 
 @router.put("/{id}")
-def update_user() -> UserOutputData:
+def update_user():
     """
     update_user
     """
     pass
 
 
-@router.delete("/{id}")
-def delete_user() -> UserOutputData:
+@router.delete(
+    "/{id}",
+    response_model=UserDeleteOutputData,
+    responses={
+        404: {
+            "description": "User not found",
+            "content": {
+                "application/json": {"example": {"detail": "User not found: id=id"}}
+            },
+        },
+        500: {
+            "description": "Delete user is failed",
+            "content": {
+                "application/json": {"example": {"detail": "Delete user is failed."}}
+            },
+        },
+    },
+)
+def delete_user(
+    id: int = Path(..., title="The ID of the user.", ge=1)
+) -> UserDeleteOutputData:
     """
     delete_user
     """
-    pass
+    try:
+        content = injector.user_delete_interactor().handle(id)
+    except NoContentError:
+        raise HTTPException(status_code=404, detail=f"User not found: id={id}")
+    except Exception:
+        raise HTTPException(status_code=500, detail="Delete user is failed.")
+
+    return content

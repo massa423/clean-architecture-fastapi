@@ -35,6 +35,13 @@ class UserRepository(metaclass=ABCMeta):
         """
         raise NotImplementedError
 
+    @abstractmethod
+    def delete_user(self, id: int) -> Optional[Dict]:
+        """
+        delete_user
+        """
+        raise NotImplementedError
+
 
 class UserRepositoryImpl(UserRepository):
     """
@@ -107,7 +114,6 @@ class UserRepositoryImpl(UserRepository):
         """
 
         now = datetime.now()
-        created_user = None
 
         user = User(
             name=name,
@@ -151,5 +157,40 @@ class UserRepositoryImpl(UserRepository):
             "email": created_user.email,
             "created_at": created_user.created_at,
             "updated_at": created_user.updated_at,
+        }
+        return response
+
+    def delete_user(self, id: int) -> Optional[Dict]:
+        """
+        delete_user
+        """
+        try:
+            deleted_user = db.session.query(User).filter(User.id == id).first()
+        except Exception as e:
+            print(e)
+            raise
+        finally:
+            db.session.close()
+
+        if deleted_user is None:
+            raise NoContentError
+
+        try:
+            db.session.query(User).filter(User.id == id).delete()
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            print(e)
+            raise
+        finally:
+            db.session.close()
+
+        response = {
+            "id": deleted_user.id,
+            "name": deleted_user.name,
+            "password": deleted_user.password,
+            "email": deleted_user.email,
+            "created_at": deleted_user.created_at,
+            "updated_at": deleted_user.updated_at,
         }
         return response
