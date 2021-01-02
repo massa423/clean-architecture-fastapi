@@ -58,3 +58,19 @@ select * from users;
   2 | octopus | 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8 | octopus@example.com | 2020-12-29 21:03:09.173484 | 2020-12-29 21:03:09.173484
 (2 rows)
 ```
+
+## プロジェクトの構造
+
+```
+app
+├── api                - API関連
+│   └── v1             - API v1関連
+│       └── endpoints  - APIのエンドポイントに関する処理
+├── core               - configやロガー、injectorなど
+├── domains            - Enterprise Business Rules
+├── exceptions         - 例外
+├── interfaces         - Interface Adapters
+│   └── gateways       - DB等の外部資源とのやりとりを行う
+└── usecases           - Application Business Rules
+    └── users          - ユーザ操作系処理
+```

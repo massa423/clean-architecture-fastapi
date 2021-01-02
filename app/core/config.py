@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseSettings, AnyHttpUrl
+from pydantic import BaseSettings, AnyHttpUrl, validator
 
 
 class Settings(BaseSettings):
@@ -19,6 +19,17 @@ class Settings(BaseSettings):
     AVAILABLE_PASSWORD_CHARACTER = (
         r"^[a-zA-Z0-9\\|:;\"\'<>,.?/`˜!@#$%^&*()_+-=\{\}\[\]]+$"
     )
+
+    @validator("PASSWORD_MIN_LENGTH")
+    @classmethod
+    def password_requires_at_least_6_characters(cls, v: int) -> int:
+
+        """
+        password_requires_at_least_6_characters
+        """
+        if v < 6:
+            raise ValueError("PASSWORD_MIN_LENGTH must be greater than 6.")
+        return v
 
     DATABASE_DIALECT = "postgresql"
     DATABASE_USER = "postgres"

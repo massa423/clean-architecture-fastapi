@@ -62,6 +62,7 @@ class UserCreateInteractorImpl(UserCreateInteractor):
         """
         handle
         """
+
         user = User(
             name=user_input.name,
             password=user_input.password,
@@ -72,6 +73,4 @@ class UserCreateInteractorImpl(UserCreateInteractor):
             user.name, user.password, user.email
         )
 
-        response = parse_obj_as(UserOutputData, data)
-
-        return response
+        return parse_obj_as(UserOutputData, data)

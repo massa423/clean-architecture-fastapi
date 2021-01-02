@@ -42,10 +42,9 @@ class UserDeleteInteractorImpl(UserDeleteInteractor):
         """
         handle
         """
+
         user = User(id=id)
 
         data = injector.user_repository().delete_user(user.id)
 
-        response = parse_obj_as(UserOutputData, data)
-
-        return response
+        return parse_obj_as(UserOutputData, data)

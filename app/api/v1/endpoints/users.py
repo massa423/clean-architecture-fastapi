@@ -1,6 +1,5 @@
 from fastapi import APIRouter, status, Path
 from fastapi.exceptions import HTTPException
-from pydantic import ValidationError
 from typing import List
 
 from app.usecases.users.user_get_usercase import UserOutputData as UserGetOutputData
@@ -17,11 +16,14 @@ from app.usecases.users.user_update_usecase import (
 )
 from app.core.usecase_injector import injector
 from app.core.config import settings
+
+from app.core.logger import logger
 from app.exceptions.exception import DuplicateError, NoContentError
 
 router = APIRouter()
 
 
+# [TODO]offsetとlimitの指定
 @router.get(
     "/",
     response_model=List[UserGetOutputData],
@@ -42,11 +44,14 @@ def read_users() -> UserGetOutputData:
     """
     read_users
     """
+
     try:
         content = injector.user_get_interactor().handle()
-    except NoContentError:
-        raise HTTPException(status_code=404, detail="Users not found")
-    except Exception:
+    except NoContentError as e:
+        logger.info(f"NoContentError: {e}")
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.exception(e)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
     return content
@@ -76,11 +81,14 @@ def read_user(
     """
     read_user
     """
+
     try:
         content = injector.user_get_interactor().handle(id)
-    except NoContentError:
-        raise HTTPException(status_code=404, detail=f"User not found: id={id}")
-    except Exception:
+    except NoContentError as e:
+        logger.info(f"NoContentError: {e}")
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.exception(e)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
     return content
@@ -124,16 +132,21 @@ def create_user(user: UserCreateInputputData) -> UserCreateOutputData:
 
     try:
         content = injector.user_create_interactor().handle(user)
-    except DuplicateError:
+    except DuplicateError as e:
+        logger.info(f"DuplicateError: {e}")
         raise HTTPException(
             status_code=409, detail=f"User or email is already exists: {user}"
         )
     except NoContentError:
+        logger.warning(
+            "NoContentError: User({user}) is created, but data fetch is failed."
+        )
         raise HTTPException(
             status_code=204,
             detail=f"User({user}) is created, but data fetch is failed.",
         )
-    except Exception:
+    except Exception as e:
+        logger.exception(e)
         raise HTTPException(status_code=500, detail="Create user is failed.")
 
     return content
@@ -182,22 +195,27 @@ def update_user(
     """
     update_user
     """
+
     try:
         content = injector.user_update_interactor().handle(id, user)
-    except DuplicateError:
+    except DuplicateError as e:
+        logger.info(f"DuplicateError: {e}")
         raise HTTPException(
             status_code=409, detail=f"User or email is already exists: {user}"
         )
     except NoContentError:
+        logger.warning(
+            "NoContentError: User({user}) is updated, but data fetch is failed."
+        )
         raise HTTPException(
             status_code=204,
-            detail=f"User({user}) is created, but data fetch is failed.",
+            detail=f"User({user}) is updated, but data fetch is failed.",
         )
-    except ValidationError as e:
-        raise HTTPException(status_code=422, detail=str(e))
     except ValueError as e:
+        logger.info(f"ValueError: {e}")
         raise HTTPException(status_code=400, detail=str(e))
-    except Exception:
+    except Exception as e:
+        logger.exception(e)
         raise HTTPException(status_code=500, detail="Update user is failed.")
 
     return content
@@ -227,11 +245,14 @@ def delete_user(
     """
     delete_user
     """
+
     try:
         content = injector.user_delete_interactor().handle(id)
     except NoContentError:
+        logger.info(f"NoContentError: User not found: id={id}")
         raise HTTPException(status_code=404, detail=f"User not found: id={id}")
-    except Exception:
+    except Exception as e:
+        logger.exception(e)
         raise HTTPException(status_code=500, detail="Delete user is failed.")
 
     return content

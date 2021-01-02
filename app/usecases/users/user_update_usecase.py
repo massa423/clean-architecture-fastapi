@@ -67,7 +67,7 @@ class UserUpdateInteractorImpl(UserUpdateInteractor):
         """
         handle
         """
-        print(user_input)
+
         user = User(
             id=id,
             name=user_input.name,
@@ -85,10 +85,8 @@ class UserUpdateInteractorImpl(UserUpdateInteractor):
 
         # idしかない場合はバリデーションエラー
         if len(data_to_be_updated) == 1:
-            raise ValueError(f"need at least one field to be updated: {user_input}")
+            raise ValueError(f"Specify at least one field to be updated: {user_input}")
 
         data = injector.user_repository().update_user(data_to_be_updated)
 
-        response = parse_obj_as(UserOutputData, data)
-
-        return response
+        return parse_obj_as(UserOutputData, data)

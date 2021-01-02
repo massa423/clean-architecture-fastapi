@@ -4,7 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.api import api_router
 from app.core.config import settings
 
-app = FastAPI()
+app = FastAPI(
+    title="FastAPI Sample RESTful API with Clean Architecture", version="0.1.0"
+)
 
 app.add_middleware(
     CORSMiddleware,

@@ -30,7 +30,7 @@ class UserGetInteractor(metaclass=ABCMeta):
         """
         handle
         """
-        raise NotImplementedError
+        pass
 
 
 class UserGetInteractorImpl(UserGetInteractor):
@@ -70,9 +70,8 @@ class UserGetInteractorImpl(UserGetInteractor):
         """
         __find_user_by_id
         """
+
         user = User(id=id)
         data = injector.user_repository().find_user_by_id(user.id)
 
-        response = parse_obj_as(UserOutputData, data)
-
-        return response
+        return parse_obj_as(UserOutputData, data)
