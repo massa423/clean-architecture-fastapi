@@ -1,16 +1,16 @@
 from abc import ABCMeta, abstractmethod
-from pydantic import BaseModel, Field, EmailStr, SecretStr, parse_obj_as
-from datetime import datetime
+from pydantic import BaseModel, Field, EmailStr, parse_obj_as
 from typing import Optional
 
 from app.domains.user import User
+from app.usecases.users.data import UserOutputData
 from app.core.repository_injector import injector
 from app.core.config import settings
 
 
-class UserInputData(BaseModel):
+class UserCreateInputputData(BaseModel):
     """
-    UserInputData
+    UserCreateInputputData
     """
 
     name: str = Field(
@@ -27,26 +27,13 @@ class UserInputData(BaseModel):
     email: EmailStr
 
 
-class UserOutputData(BaseModel):
-    """
-    UserOutputData
-    """
-
-    id: int
-    name: str
-    password: SecretStr
-    email: EmailStr
-    created_at: datetime
-    updated_at: datetime
-
-
 class UserCreateInteractor(metaclass=ABCMeta):
     """
     UserCreateInteractor
     """
 
     @abstractmethod
-    def handle(self, user: UserInputData) -> Optional[UserOutputData]:
+    def handle(self, user: UserCreateInputputData) -> Optional[UserOutputData]:
         """
         handle
         """
@@ -58,7 +45,7 @@ class UserCreateInteractorImpl(UserCreateInteractor):
     UserCreateInteractorImpl
     """
 
-    def handle(self, user_input: UserInputData) -> Optional[UserOutputData]:
+    def handle(self, user_input: UserCreateInputputData) -> Optional[UserOutputData]:
         """
         handle
         """

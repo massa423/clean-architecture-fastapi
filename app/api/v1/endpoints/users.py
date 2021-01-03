@@ -1,19 +1,11 @@
-from fastapi import APIRouter, status, Path
+from fastapi import APIRouter, status, Path, Depends
 from fastapi.exceptions import HTTPException
 from typing import List
 
-from app.usecases.users.user_get_usercase import UserOutputData as UserGetOutputData
-from app.usecases.users.user_create_usecase import (
-    UserInputData as UserCreateInputputData,
-    UserOutputData as UserCreateOutputData,
-)
-from app.usecases.users.user_delete_usecase import (
-    UserOutputData as UserDeleteOutputData,
-)
-from app.usecases.users.user_update_usecase import (
-    UserInputData as UserUpdateInputData,
-    UserOutputData as UserUpdateOutputData,
-)
+from app.api.v1.dependency import get_current_user
+from app.usecases.users.data import UserOutputData
+from app.usecases.users.user_create_usecase import UserCreateInputputData
+from app.usecases.users.user_update_usecase import UserUpdateInputData
 from app.core.usecase_injector import injector
 from app.core.config import settings
 
@@ -26,7 +18,7 @@ router = APIRouter()
 # [TODO]offsetとlimitの指定
 @router.get(
     "/",
-    response_model=List[UserGetOutputData],
+    response_model=List[UserOutputData],
     responses={
         404: {
             "description": "Users not found",
@@ -40,7 +32,7 @@ router = APIRouter()
         },
     },
 )
-def read_users() -> UserGetOutputData:
+def read_users() -> UserOutputData:
     """
     read_users
     """
@@ -58,8 +50,34 @@ def read_users() -> UserGetOutputData:
 
 
 @router.get(
+    "/me",
+    response_model=UserOutputData,
+    responses={
+        401: {
+            "description": "Incorrect username or password",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Incorrect username or password"}
+                }
+            },
+        },
+        500: {
+            "description": "Internal Server Error",
+            "content": {
+                "application/json": {"example": {"detail": "Internal Server Error"}}
+            },
+        },
+    },
+)
+async def read_users_me(
+    user: UserOutputData = Depends(get_current_user),
+) -> UserOutputData:
+    return user
+
+
+@router.get(
     "/{id}",
-    response_model=UserGetOutputData,
+    response_model=UserOutputData,
     responses={
         404: {
             "description": "User not found",
@@ -77,7 +95,7 @@ def read_users() -> UserGetOutputData:
 )
 def read_user(
     id: int = Path(..., title="The ID of the user.", ge=settings.ID_MIN)
-) -> UserGetOutputData:
+) -> UserOutputData:
     """
     read_user
     """
@@ -96,7 +114,7 @@ def read_user(
 
 @router.post(
     "/{name}",
-    response_model=UserCreateOutputData,
+    response_model=UserOutputData,
     status_code=status.HTTP_201_CREATED,
     responses={
         204: {
@@ -125,7 +143,7 @@ def read_user(
         },
     },
 )
-def create_user(user: UserCreateInputputData) -> UserCreateOutputData:
+def create_user(user: UserCreateInputputData = Depends()) -> UserOutputData:
     """
     create_user
     """
@@ -154,7 +172,7 @@ def create_user(user: UserCreateInputputData) -> UserCreateOutputData:
 
 @router.put(
     "/{id}",
-    response_model=UserUpdateOutputData,
+    response_model=UserOutputData,
     responses={
         204: {
             "description": "User is updated, but data fetch is failed.",
@@ -189,9 +207,9 @@ def create_user(user: UserCreateInputputData) -> UserCreateOutputData:
     },
 )
 def update_user(
-    user: UserUpdateInputData,
+    user: UserUpdateInputData = Depends(),
     id: int = Path(..., title="The ID of the user.", ge=settings.ID_MIN),
-) -> UserUpdateOutputData:
+) -> UserOutputData:
     """
     update_user
     """
@@ -223,7 +241,7 @@ def update_user(
 
 @router.delete(
     "/{id}",
-    response_model=UserDeleteOutputData,
+    response_model=UserOutputData,
     responses={
         404: {
             "description": "User not found",
@@ -241,7 +259,7 @@ def update_user(
 )
 def delete_user(
     id: int = Path(..., title="The ID of the user.", ge=settings.ID_MIN)
-) -> UserDeleteOutputData:
+) -> UserOutputData:
     """
     delete_user
     """

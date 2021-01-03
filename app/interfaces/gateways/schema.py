@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime
 
 from app.interfaces.gateways.db import Base
+from app.lib.security import encrypt_password_to_sha256
 
 
 class User(Base):  # type: ignore
@@ -28,7 +29,7 @@ class User(Base):  # type: ignore
         updated_at: datetime,
     ):
         self.name = name
-        self.password = hashlib.sha256(password.encode()).hexdigest()
+        self.password = encrypt_password_to_sha256(password)
         self.email = email
         self.created_at = created_at
         self.updated_at = updated_at

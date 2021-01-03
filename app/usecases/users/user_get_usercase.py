@@ -1,23 +1,10 @@
 from abc import ABCMeta, abstractmethod
 from typing import Union, List, Optional
-from pydantic import BaseModel, EmailStr, SecretStr, parse_obj_as
-from datetime import datetime
+from pydantic import parse_obj_as
 
 from app.domains.user import User
+from app.usecases.users.data import UserOutputData
 from app.core.repository_injector import injector
-
-
-class UserOutputData(BaseModel):
-    """
-    UserOutputData
-    """
-
-    id: int
-    name: str
-    password: SecretStr
-    email: EmailStr
-    created_at: datetime
-    updated_at: datetime
 
 
 class UserGetInteractor(metaclass=ABCMeta):

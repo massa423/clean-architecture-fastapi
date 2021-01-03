@@ -6,6 +6,7 @@ from app.interfaces.gateways import db
 from app.interfaces.gateways.schema import User
 from app.exceptions.exception import DuplicateError, NoContentError
 from app.core.logger import logger
+from app.lib.security import encrypt_password_to_sha256
 
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
@@ -98,6 +99,23 @@ class UserRepositoryImpl(UserRepository):
 
         return self.__convert_schema_obj_to_dict(user)
 
+    def find_user_by_name(self, name: str) -> Optional[Dict]:
+        """
+        find_user_by_name
+        """
+
+        try:
+            user = db.session.query(User).filter(User.name == name).first()
+        except SQLAlchemyError:
+            raise
+        finally:
+            db.session.close()
+
+        if user is None:
+            raise NoContentError(f"User not found: name={name}")
+
+        return self.__convert_schema_obj_to_dict(user)
+
     def create_user(self, name: str, password: str, email: str) -> Optional[Dict]:
         """
         create_user
@@ -172,6 +190,12 @@ class UserRepositoryImpl(UserRepository):
 
         now = datetime.now()
         data_to_be_updated["updated_at"] = now
+
+        # パスワード暗号化
+        if data_to_be_updated.get("password") is not None:
+            data_to_be_updated["password"] = encrypt_password_to_sha256(
+                data_to_be_updated["password"]
+            )
 
         try:
             db.session.query(User).filter(User.id == data_to_be_updated["id"]).update(

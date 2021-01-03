@@ -3,19 +3,19 @@ from pydantic import (
     BaseModel,
     Field,
     EmailStr,
-    SecretStr,
     parse_obj_as,
 )
-from datetime import datetime
 from typing import Optional
+
 from app.domains.user import User
+from app.usecases.users.data import UserOutputData
 from app.core.repository_injector import injector
 from app.core.config import settings
 
 
-class UserInputData(BaseModel):
+class UserUpdateInputData(BaseModel):
     """
-    UserInputData
+    UserUpdateInputData
     """
 
     name: Optional[str] = Field(
@@ -32,26 +32,13 @@ class UserInputData(BaseModel):
     email: Optional[EmailStr]
 
 
-class UserOutputData(BaseModel):
-    """
-    UserOutputData
-    """
-
-    id: int
-    name: str
-    password: SecretStr
-    email: EmailStr
-    created_at: datetime
-    updated_at: datetime
-
-
 class UserUpdateInteractor(metaclass=ABCMeta):
     """
     UserUpdateInteractor
     """
 
     @abstractmethod
-    def handle(self, id: int, user: UserInputData) -> Optional[UserOutputData]:
+    def handle(self, id: int, user: UserUpdateInputData) -> Optional[UserOutputData]:
         """
         handle
         """
@@ -63,7 +50,9 @@ class UserUpdateInteractorImpl(UserUpdateInteractor):
     UserUpdateInteractorImpl
     """
 
-    def handle(self, id: int, user_input: UserInputData) -> Optional[UserOutputData]:
+    def handle(
+        self, id: int, user_input: UserUpdateInputData
+    ) -> Optional[UserOutputData]:
         """
         handle
         """
