@@ -6,7 +6,7 @@ from app.api.v1.dependency import get_current_user
 from app.usecases.users.data import UserOutputData
 from app.usecases.users.user_create_usecase import UserCreateInputputData
 from app.usecases.users.user_update_usecase import UserUpdateInputData
-from app.core.usecase_injector import injector
+from app.injector.usecase_injector import injector
 from app.core.config import settings
 
 from app.core.logger import logger

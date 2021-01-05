@@ -4,7 +4,7 @@ from pydantic import parse_obj_as
 
 from app.domains.user import User
 from app.usecases.users.data import UserOutputData
-from app.core.repository_injector import injector
+from app.injector.repository_injector import injector
 
 
 class UserGetInteractor(metaclass=ABCMeta):

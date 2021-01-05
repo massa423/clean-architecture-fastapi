@@ -3,7 +3,7 @@ from typing import Dict
 from pydantic import BaseModel
 from datetime import timedelta
 
-from app.core.repository_injector import injector
+from app.injector.repository_injector import injector
 from app.core.config import settings
 from app.lib.security import encrypt_password_to_sha256
 from app.lib.jwt import create_access_token

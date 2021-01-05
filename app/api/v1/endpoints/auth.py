@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.usecases.auth.auth_usecase import Token
-from app.core.usecase_injector import injector
+from app.injector.usecase_injector import injector
 from app.core.logger import logger
 
 router = APIRouter()

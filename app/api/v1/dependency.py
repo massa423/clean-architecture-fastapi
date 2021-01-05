@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from app.exceptions.exception import NoContentError
 from app.usecases.users.data import UserOutputData
-from app.core.usecase_injector import injector
+from app.injector.usecase_injector import injector
 from app.core.logger import logger
 from app.lib.jwt import get_id_from_token
 
