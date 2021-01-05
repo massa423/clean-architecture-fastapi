@@ -33,7 +33,6 @@ def get_id_from_token(token: str) -> str:
         payload = jwt.decode(
             token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
         )
-        print(payload)
         id: str = payload.get("sub")
     except JWTError:
         raise

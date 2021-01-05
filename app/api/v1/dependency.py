@@ -21,7 +21,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserOutputDat
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-    logger.info(token)
     try:
         id = get_id_from_token(token)
     except Exception as e:
@@ -36,7 +35,5 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserOutputDat
     except Exception as e:
         logger.exception(e)
         raise HTTPException(status_code=500, detail="Internal Server Error")
-
-    logger.info(user)
 
     return user
