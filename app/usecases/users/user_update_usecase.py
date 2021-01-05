@@ -64,17 +64,14 @@ class UserUpdateInteractorImpl(UserUpdateInteractor):
             email=user_input.email,
         )
 
-        user_dict = user.dict()
-        data_to_be_updated = {}
-
         # Valueが存在する要素のみアップデート対象として抽出する
-        for k, v in user_dict.items():
-            if v:
-                data_to_be_updated[k] = v
+        data_to_be_updated = user.dict(exclude_none=True)
 
         # idしかない場合はバリデーションエラー
         if len(data_to_be_updated) == 1:
-            raise ValueError(f"Specify at least one field to be updated: {user_input}")
+            raise ValueError(
+                f"Specify at least one field to be updated: {', '.join(user_input.dict().keys())}"
+            )
 
         data = injector.user_repository().update_user(data_to_be_updated)
 
