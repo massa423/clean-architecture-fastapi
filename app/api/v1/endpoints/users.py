@@ -113,7 +113,7 @@ def read_user(
 
 
 @router.post(
-    "/{name}",
+    "/",
     response_model=UserOutputData,
     status_code=status.HTTP_201_CREATED,
     responses={
@@ -143,7 +143,7 @@ def read_user(
         },
     },
 )
-def create_user(user: UserCreateInputputData = Depends()) -> UserOutputData:
+def create_user(user: UserCreateInputputData) -> UserOutputData:
     """
     create_user
     """
