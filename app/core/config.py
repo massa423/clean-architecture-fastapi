@@ -1,3 +1,5 @@
+import os
+
 from typing import List
 from pydantic import BaseSettings, AnyHttpUrl, validator
 
@@ -31,17 +33,28 @@ class Settings(BaseSettings):
             raise ValueError("PASSWORD_MIN_LENGTH must be greater than 6.")
         return v
 
-    DATABASE_DIALECT = "postgresql"
-    DATABASE_USER = "postgres"
-    DATABASE_PASSWORD = "password"
-    DATABASE_HOST = "localhost"
-    DATABASE_PORT = "15432"
-    DATABASE_NAME = "testdb"
-    DATABASE_URL = f"{DATABASE_DIALECT}://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
+    # データベース関連設定
+    DATABASE_DIALECT = os.getenv("DATABASE_DIALECT", "sqlite")
+    DATABASE_USER = os.getenv("DATABASE_USER", "admin")
+    DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", "password")
+    DATABASE_HOST = os.getenv("DATABASE_HOST", "localhost")
+    DATABASE_PORT = os.getenv("DATABASE_PORT", "5432")
+    DATABASE_NAME = os.getenv("DATABASE_NAME", "testdb")
 
-    JWT_SECRET_KEY = "b9ae65b560a0f82443399d06eb4c0b34f95d46cc50c6a4030374ec70d2c478b7"
+    if DATABASE_DIALECT == "sqlite":
+        DATABASE_URL = "sqlite:///sample_db.sqlite3"
+    else:
+        DATABASE_URL = f"{DATABASE_DIALECT}://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
+
+    # JWT関連設定
+    JWT_SECRET_KEY = os.getenv(
+        "JWT_SECRET_KEY",
+        "abcdefg0123456789",
+    )
     JWT_ALGORITHM = "HS256"
-    JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 30
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(
+        os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", 30)
+    )
 
 
 settings = Settings()

@@ -3,3 +3,7 @@ __pycache__/
 .mypy_cache/
 .python-version
 .DS_Store
+
+.env-app
+.env-postgresql
+sample_db.sqlite3
