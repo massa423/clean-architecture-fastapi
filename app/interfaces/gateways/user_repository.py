@@ -93,6 +93,7 @@ class UserRepositoryImpl(UserRepository):
             raise
         finally:
             db.session.close()
+            logger.info("db connection closed.")
 
         if user is None:
             raise NoContentError(f"User not found: id={id}")
@@ -142,6 +143,7 @@ class UserRepositoryImpl(UserRepository):
             raise
         finally:
             db.session.close()
+            logger.info("db connection closed.")
 
         try:
             created_user = (
@@ -154,6 +156,7 @@ class UserRepositoryImpl(UserRepository):
             raise NoContentError
         finally:
             db.session.close()
+            logger.info("db connection closed.")
 
         return self.__convert_schema_obj_to_dict(created_user)
 
@@ -180,6 +183,7 @@ class UserRepositoryImpl(UserRepository):
             raise
         finally:
             db.session.close()
+            logger.info("db connection closed.")
 
         return self.__convert_schema_obj_to_dict(deleted_user)
 
@@ -187,6 +191,22 @@ class UserRepositoryImpl(UserRepository):
         """
         update_user
         """
+
+        # 事前に対象ユーザの存在確認
+        try:
+            user = (
+                db.session.query(User)
+                .filter(User.id == data_to_be_updated["id"])
+                .first()
+            )
+        except SQLAlchemyError:
+            raise
+        finally:
+            db.session.close()
+            logger.info("db connection closed.")
+
+        if user is None:
+            raise NoContentError("status code will be 404")
 
         now = datetime.now()
         data_to_be_updated["updated_at"] = now
@@ -197,6 +217,7 @@ class UserRepositoryImpl(UserRepository):
                 data_to_be_updated["password"]
             )
 
+        # アップデート
         try:
             db.session.query(User).filter(User.id == data_to_be_updated["id"]).update(
                 data_to_be_updated
@@ -209,6 +230,7 @@ class UserRepositoryImpl(UserRepository):
             raise
         finally:
             db.session.close()
+            logger.info("db connection closed.")
 
         try:
             updated_user = (
@@ -217,9 +239,13 @@ class UserRepositoryImpl(UserRepository):
                 .first()
             )
         except SQLAlchemyError:
-            raise NoContentError
+            raise
         finally:
             db.session.close()
+            logger.info("db connection closed.")
+
+        if updated_user is None:
+            raise NoContentError("status code will be 204")
 
         return self.__convert_schema_obj_to_dict(updated_user)
 

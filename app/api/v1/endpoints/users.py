@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Path, Depends
+from fastapi import APIRouter, status, Path, Depends, Response
 from fastapi.exceptions import HTTPException
 from typing import List
 
@@ -23,12 +23,6 @@ router = APIRouter()
         404: {
             "description": "Users not found",
             "content": {"application/json": {"example": {"detail": "Users not found"}}},
-        },
-        500: {
-            "description": "Internal Server Error",
-            "content": {
-                "application/json": {"example": {"detail": "Internal Server Error"}}
-            },
         },
     },
 )
@@ -61,15 +55,9 @@ def read_users() -> UserOutputData:
                 }
             },
         },
-        500: {
-            "description": "Internal Server Error",
-            "content": {
-                "application/json": {"example": {"detail": "Internal Server Error"}}
-            },
-        },
     },
 )
-async def read_users_me(
+def read_users_me(
     user: UserOutputData = Depends(get_current_user),
 ) -> UserOutputData:
     return user
@@ -83,12 +71,6 @@ async def read_users_me(
             "description": "User not found",
             "content": {
                 "application/json": {"example": {"detail": "User not found: id=id"}}
-            },
-        },
-        500: {
-            "description": "Internal Server Error",
-            "content": {
-                "application/json": {"example": {"detail": "Internal Server Error"}}
             },
         },
     },
@@ -119,13 +101,6 @@ def read_user(
     responses={
         204: {
             "description": "User is created, but data fetch is failed.",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "detail": "User(name) is created, but data fetch is failed."
-                    }
-                }
-            },
         },
         409: {
             "description": "User of email is already exists.",
@@ -133,12 +108,6 @@ def read_user(
                 "application/json": {
                     "example": {"detail": "User or email is already exists: name"}
                 }
-            },
-        },
-        500: {
-            "description": "Create user is failed",
-            "content": {
-                "application/json": {"example": {"detail": "Create user is failed."}}
             },
         },
     },
@@ -157,15 +126,14 @@ def create_user(user: UserCreateInputputData) -> UserOutputData:
         )
     except NoContentError:
         logger.warning(
-            "NoContentError: User({user}) is created, but data fetch is failed."
+            f"NoContentError: User({user}) is created, but data fetch is failed."
         )
-        raise HTTPException(
-            status_code=204,
-            detail=f"User({user}) is created, but data fetch is failed.",
-        )
+        # ステータスコード204はmessage bodyを含めることができない。
+        # https://github.com/tiangolo/fastapi/issues/2253
+        return Response(status_code=204)
     except Exception as e:
         logger.exception(e)
-        raise HTTPException(status_code=500, detail="Create user is failed.")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
     return content
 
@@ -176,18 +144,17 @@ def create_user(user: UserCreateInputputData) -> UserOutputData:
     responses={
         204: {
             "description": "User is updated, but data fetch is failed.",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "detail": "User(name) is updated, but data fetch is failed."
-                    }
-                }
-            },
         },
         400: {
             "description": "Bad Request.",
             "content": {
                 "application/json": {"example": {"detail": "Invalid request body."}}
+            },
+        },
+        404: {
+            "description": "User not found",
+            "content": {
+                "application/json": {"example": {"detail": "User not found: id=id"}}
             },
         },
         409: {
@@ -196,12 +163,6 @@ def create_user(user: UserCreateInputputData) -> UserOutputData:
                 "application/json": {
                     "example": {"detail": "User or email is already exists: name"}
                 }
-            },
-        },
-        500: {
-            "description": "Update user is failed",
-            "content": {
-                "application/json": {"example": {"detail": "Update user is failed."}}
             },
         },
     },
@@ -221,20 +182,21 @@ def update_user(
         raise HTTPException(
             status_code=409, detail=f"User or email is already exists: {user}"
         )
-    except NoContentError:
-        logger.warning(
-            "NoContentError: User({user}) is updated, but data fetch is failed."
-        )
-        raise HTTPException(
-            status_code=204,
-            detail=f"User({user}) is updated, but data fetch is failed.",
-        )
+    except NoContentError as e:
+        if "404" in str(e):
+            logger.info(f"NoContentError: User not found: id={id}")
+            raise HTTPException(status_code=404, detail=f"User not found: id={id}")
+        else:
+            logger.warning(
+                f"NoContentError: User({user}) is updated, but data fetch is failed."
+            )
+            return Response(status_code=204)
     except ValueError as e:
         logger.info(f"ValueError: {e}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.exception(e)
-        raise HTTPException(status_code=500, detail="Update user is failed.")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
     return content
 
@@ -247,12 +209,6 @@ def update_user(
             "description": "User not found",
             "content": {
                 "application/json": {"example": {"detail": "User not found: id=id"}}
-            },
-        },
-        500: {
-            "description": "Delete user is failed",
-            "content": {
-                "application/json": {"example": {"detail": "Delete user is failed."}}
             },
         },
     },
@@ -271,6 +227,6 @@ def delete_user(
         raise HTTPException(status_code=404, detail=f"User not found: id={id}")
     except Exception as e:
         logger.exception(e)
-        raise HTTPException(status_code=500, detail="Delete user is failed.")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
     return content

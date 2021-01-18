@@ -17,4 +17,15 @@ app.add_middleware(
 )
 
 
-app.include_router(api_router, prefix="/api/v1")
+app.include_router(
+    api_router,
+    prefix="/api/v1",
+    responses={
+        500: {
+            "description": "Internal Server Error",
+            "content": {
+                "application/json": {"example": {"detail": "Internal Server Error"}}
+            },
+        }
+    },
+)

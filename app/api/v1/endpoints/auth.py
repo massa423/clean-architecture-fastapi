@@ -20,12 +20,6 @@ router = APIRouter()
                 }
             },
         },
-        500: {
-            "description": "Internal Server Error",
-            "content": {
-                "application/json": {"example": {"detail": "Internal Server Error"}}
-            },
-        },
     },
 )
 async def login(form_data: OAuth2PasswordRequestForm = Depends()) -> Token:
