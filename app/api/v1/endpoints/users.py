@@ -60,6 +60,9 @@ def read_users() -> UserOutputData:
 def read_users_me(
     user: UserOutputData = Depends(get_current_user),
 ) -> UserOutputData:
+    """
+    read_user_me
+    """
     return user
 
 
@@ -168,7 +171,7 @@ def create_user(user: UserCreateInputputData) -> UserOutputData:
     },
 )
 def update_user(
-    user: UserUpdateInputData = Depends(),
+    user: UserUpdateInputData,
     id: int = Path(..., title="The ID of the user.", ge=settings.ID_MIN),
 ) -> UserOutputData:
     """
