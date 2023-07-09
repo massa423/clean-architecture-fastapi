@@ -1,16 +1,21 @@
 from abc import ABCMeta, abstractmethod
 from pydantic import parse_obj_as
 from typing import Optional
+from injector import inject
 
-from app.domains.user import User
+from app.domains.user import UserBase
 from app.usecases.users.data import UserOutputData
-from app.injector.repository_injector import injector
+from app.interfaces.gateways.user_repository import UserRepository
 
 
 class UserDeleteInteractor(metaclass=ABCMeta):
     """
     UserDeleteInteractor
     """
+
+    @inject
+    def __init__(self, repository: UserRepository):
+        self.repository = repository
 
     @abstractmethod
     def handle(self, id: int) -> Optional[UserOutputData]:
@@ -30,8 +35,8 @@ class UserDeleteInteractorImpl(UserDeleteInteractor):
         handle
         """
 
-        user = User(id=id)
+        user = UserBase(id=id)
 
-        data = injector.user_repository().delete_user(user.id)
+        data = self.repository.delete_user(user.id)
 
         return parse_obj_as(UserOutputData, data)

@@ -30,6 +30,12 @@ class UserRepository(metaclass=ABCMeta):
         """
         pass
 
+    def find_user_by_name(self, name: str) -> Optional[Dict]:
+        """
+        find_user_by_name
+        """
+        pass
+
     @abstractmethod
     def create_user(self, name: str, password: str, email: str) -> Optional[Dict]:
         """

@@ -1,10 +1,11 @@
 from abc import ABCMeta, abstractmethod
 from typing import Union, List, Optional
 from pydantic import parse_obj_as
+from injector import inject
 
-from app.domains.user import User
+from app.domains.user import UserBase
 from app.usecases.users.data import UserOutputData
-from app.injector.repository_injector import injector
+from app.interfaces.gateways.user_repository import UserRepository
 
 
 class UserGetInteractor(metaclass=ABCMeta):
@@ -12,8 +13,12 @@ class UserGetInteractor(metaclass=ABCMeta):
     UserGetUsecase
     """
 
+    @inject
+    def __init__(self, repository: UserRepository):
+        self.repository = repository
+
     @abstractmethod
-    def handle(self, id: int) -> Optional[Union[UserOutputData, List[UserOutputData]]]:
+    def handle(self, id: int = 0) -> Optional[Union[UserOutputData, List[UserOutputData]]]:
         """
         handle
         """
@@ -25,9 +30,7 @@ class UserGetInteractorImpl(UserGetInteractor):
     UserGetInteractorImpl
     """
 
-    def handle(
-        self, id: int = 0
-    ) -> Optional[Union[UserOutputData, List[UserOutputData]]]:
+    def handle(self, id: int = 0) -> Optional[Union[UserOutputData, List[UserOutputData]]]:
         """
         handle
         """
@@ -44,7 +47,7 @@ class UserGetInteractorImpl(UserGetInteractor):
         """
         __find_users
         """
-        data = injector.user_repository().find_users()
+        data = self.repository.find_users()
 
         response = []
 
@@ -58,7 +61,7 @@ class UserGetInteractorImpl(UserGetInteractor):
         __find_user_by_id
         """
 
-        user = User(id=id)
-        data = injector.user_repository().find_user_by_id(user.id)
+        user = UserBase(id=id)
+        data = self.repository.find_user_by_id(user.id)
 
         return parse_obj_as(UserOutputData, data)
