@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-from typing import Dict, List, Optional
 from datetime import datetime
 
 from app.interfaces.gateways import db
@@ -17,41 +16,41 @@ class UserRepository(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def find_users(self) -> Optional[List[Dict]]:
+    def find_users(self) -> list[dict] | None:
         """
         find_users
         """
         pass
 
     @abstractmethod
-    def find_user_by_id(self, id: int) -> Optional[Dict]:
+    def find_user_by_id(self, id: int) -> dict | None:
         """
         find_user_by_id
         """
         pass
 
-    def find_user_by_name(self, name: str) -> Optional[Dict]:
+    def find_user_by_name(self, name: str) -> dict | None:
         """
         find_user_by_name
         """
         pass
 
     @abstractmethod
-    def create_user(self, name: str, password: str, email: str) -> Optional[Dict]:
+    def create_user(self, name: str, password: str, email: str) -> dict | None:
         """
         create_user
         """
         pass
 
     @abstractmethod
-    def delete_user(self, id: int) -> Optional[Dict]:
+    def delete_user(self, id: int) -> dict | None:
         """
         delete_user
         """
         pass
 
     @abstractmethod
-    def update_user(self, data_to_be_updated: Dict) -> Optional[Dict]:
+    def update_user(self, data_to_be_updated: dict) -> dict | None:
         """
         update_user
         """
@@ -63,7 +62,7 @@ class UserRepositoryImpl(UserRepository):
     UserRepositoryImpl
     """
 
-    def find_users(self) -> Optional[List[Dict]]:
+    def find_users(self) -> list[dict] | None:
         """
         find_users
         """
@@ -88,7 +87,7 @@ class UserRepositoryImpl(UserRepository):
 
         return response
 
-    def find_user_by_id(self, id: int) -> Optional[Dict]:
+    def find_user_by_id(self, id: int) -> dict | None:
         """
         find_user_by_id
         """
@@ -106,7 +105,7 @@ class UserRepositoryImpl(UserRepository):
 
         return self.__convert_schema_obj_to_dict(user)
 
-    def find_user_by_name(self, name: str) -> Optional[Dict]:
+    def find_user_by_name(self, name: str) -> dict | None:
         """
         find_user_by_name
         """
@@ -123,7 +122,7 @@ class UserRepositoryImpl(UserRepository):
 
         return self.__convert_schema_obj_to_dict(user)
 
-    def create_user(self, name: str, password: str, email: str) -> Optional[Dict]:
+    def create_user(self, name: str, password: str, email: str) -> dict | None:
         """
         create_user
         """
@@ -161,7 +160,7 @@ class UserRepositoryImpl(UserRepository):
 
         return self.__convert_schema_obj_to_dict(created_user)
 
-    def delete_user(self, id: int) -> Optional[Dict]:
+    def delete_user(self, id: int) -> dict | None:
         """
         delete_user
         """
@@ -188,7 +187,7 @@ class UserRepositoryImpl(UserRepository):
 
         return self.__convert_schema_obj_to_dict(deleted_user)
 
-    def update_user(self, data_to_be_updated: Dict) -> Optional[Dict]:
+    def update_user(self, data_to_be_updated: dict) -> dict | None:
         """
         update_user
         """
@@ -238,7 +237,7 @@ class UserRepositoryImpl(UserRepository):
 
         return self.__convert_schema_obj_to_dict(updated_user)
 
-    def __convert_schema_obj_to_dict(self, schema: User) -> Dict:
+    def __convert_schema_obj_to_dict(self, schema: User) -> dict:
         """
         行オブジェクトを辞書型に変換する。
         """

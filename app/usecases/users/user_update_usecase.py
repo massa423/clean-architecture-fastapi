@@ -1,6 +1,5 @@
 from abc import ABCMeta, abstractmethod
 from pydantic import BaseModel, Field, EmailStr, parse_obj_as
-from typing import Optional
 from injector import inject
 
 from app.domains.user import User
@@ -37,7 +36,7 @@ class UserUpdateInteractor(metaclass=ABCMeta):
         self.repository = repository
 
     @abstractmethod
-    def handle(self, id: int, user: UserUpdateInputData) -> Optional[UserOutputData]:
+    def handle(self, id: int, user: UserUpdateInputData) -> UserOutputData | None:
         """
         handle
         """
@@ -49,7 +48,7 @@ class UserUpdateInteractorImpl(UserUpdateInteractor):
     UserUpdateInteractorImpl
     """
 
-    def handle(self, id: int, user_input: UserUpdateInputData) -> Optional[UserOutputData]:
+    def handle(self, id: int, user_input: UserUpdateInputData) -> UserOutputData | None:
         """
         handle
         """

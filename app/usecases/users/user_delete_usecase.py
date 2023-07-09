@@ -1,6 +1,5 @@
 from abc import ABCMeta, abstractmethod
 from pydantic import parse_obj_as
-from typing import Optional
 from injector import inject
 
 from app.domains.user import UserBase
@@ -18,7 +17,7 @@ class UserDeleteInteractor(metaclass=ABCMeta):
         self.repository = repository
 
     @abstractmethod
-    def handle(self, id: int) -> Optional[UserOutputData]:
+    def handle(self, id: int) -> UserOutputData | None:
         """
         handle
         """
@@ -30,7 +29,7 @@ class UserDeleteInteractorImpl(UserDeleteInteractor):
     UserDeleteInteractorImpl
     """
 
-    def handle(self, id: int) -> Optional[UserOutputData]:
+    def handle(self, id: int) -> UserOutputData | None:
         """
         handle
         """

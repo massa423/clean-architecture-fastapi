@@ -1,6 +1,5 @@
 import os
 
-from typing import List
 from pydantic import AnyHttpUrl, validator
 from pydantic_settings import BaseSettings
 
@@ -10,7 +9,7 @@ class Settings(BaseSettings):
     Settings
     """
 
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = ["http://localhost"]  # type: ignore
+    BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = ["http://localhost"]  # type: ignore
 
     ID_MIN: int = 1
 

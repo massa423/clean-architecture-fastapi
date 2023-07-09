@@ -1,11 +1,10 @@
 from jose import jwt, JWTError
-from typing import Dict, Optional
 from datetime import datetime, timedelta
 
 from app.core.config import settings
 
 
-def create_access_token(data: Dict, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     """
     create_access_token
     """
@@ -17,9 +16,7 @@ def create_access_token(data: Dict, expires_delta: Optional[timedelta] = None) -
         expire = datetime.utcnow() + timedelta(minutes=15)
 
     to_encode.update({"exp": expire})
-    encoded_jwt: str = jwt.encode(
-        to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
-    )
+    encoded_jwt: str = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
     return encoded_jwt
 
@@ -30,9 +27,7 @@ def get_id_from_token(token: str) -> str:
     """
 
     try:
-        payload = jwt.decode(
-            token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
-        )
+        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
         id: str = payload.get("sub")
     except JWTError:
         raise

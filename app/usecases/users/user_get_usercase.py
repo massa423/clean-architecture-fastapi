@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-from typing import Union, List, Optional
 from pydantic import parse_obj_as
 from injector import inject
 
@@ -18,7 +17,7 @@ class UserGetInteractor(metaclass=ABCMeta):
         self.repository = repository
 
     @abstractmethod
-    def handle(self, id: int = 0) -> Optional[Union[UserOutputData, List[UserOutputData]]]:
+    def handle(self, id: int = 0) -> UserOutputData | list[UserOutputData] | None:
         """
         handle
         """
@@ -30,11 +29,11 @@ class UserGetInteractorImpl(UserGetInteractor):
     UserGetInteractorImpl
     """
 
-    def handle(self, id: int = 0) -> Optional[Union[UserOutputData, List[UserOutputData]]]:
+    def handle(self, id: int = 0) -> UserOutputData | list[UserOutputData] | None:
         """
         handle
         """
-        response: Optional[Union[UserOutputData, List[UserOutputData]]]
+        response: UserOutputData | list[UserOutputData] | None
 
         if id:
             response = self.__find_user_by_id(id)
@@ -43,7 +42,7 @@ class UserGetInteractorImpl(UserGetInteractor):
 
         return response
 
-    def __find_users(self) -> Optional[List[UserOutputData]]:
+    def __find_users(self) -> list[UserOutputData] | None:
         """
         __find_users
         """
@@ -56,7 +55,7 @@ class UserGetInteractorImpl(UserGetInteractor):
 
         return response
 
-    def __find_user_by_id(self, id: int) -> Optional[UserOutputData]:
+    def __find_user_by_id(self, id: int) -> UserOutputData | None:
         """
         __find_user_by_id
         """

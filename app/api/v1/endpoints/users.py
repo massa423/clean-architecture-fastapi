@@ -1,6 +1,5 @@
 from fastapi import APIRouter, status, Path, Depends, Response
 from fastapi.exceptions import HTTPException
-from typing import List
 
 from app.api.v1.dependency import get_current_user
 from app.usecases.users.data import UserOutputData
@@ -25,7 +24,7 @@ router = APIRouter()
 # TODO: offsetとlimitの指定
 @router.get(
     "/",
-    response_model=List[UserOutputData],
+    response_model=list[UserOutputData],
     responses={
         404: {
             "description": "Users not found",

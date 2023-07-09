@@ -1,5 +1,4 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
 
 
 class UserBase(BaseModel):
@@ -15,7 +14,7 @@ class User(UserBase):
     User
     """
 
-    id: Optional[int] = None
+    id: int | None = None
     name: str = Field(min_length=1)
     password: str = Field(min_length=1)
     email: EmailStr

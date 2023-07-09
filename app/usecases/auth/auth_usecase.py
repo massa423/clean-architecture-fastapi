@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-from typing import Dict
 from pydantic import BaseModel
 from datetime import timedelta
 from injector import inject
@@ -30,7 +29,7 @@ class AuthInteractor(metaclass=ABCMeta):
         self.repository = repository
 
     @abstractmethod
-    def handle(self, form_data: Dict) -> Token:
+    def handle(self, form_data: dict) -> Token:
         """
         handle
         """
@@ -42,7 +41,7 @@ class AuthInteractorImpl(AuthInteractor):
     AuthInteractorImpl
     """
 
-    def handle(self, form_data: Dict) -> Token:
+    def handle(self, form_data: dict) -> Token:
         """
         handle
         """
