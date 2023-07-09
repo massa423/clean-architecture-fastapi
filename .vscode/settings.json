@@ -1,16 +1,20 @@
 {
   "[python]": {
     "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-python.black-formatter"
   },
-  "python.pythonPath": ".venv/bin/python",
   "python.linting.enabled": true,
   "python.linting.lintOnSave": true,
   "python.linting.pylintEnabled": false,
   "python.linting.flake8Enabled": true,
   "python.linting.mypyEnabled": true,
-  "python.formatting.provider": "black",
-  "python.formatting.blackPath": ".venv/bin/black",
-  "python.autoComplete.extraPaths": [
-    "${workspaceFolder}/.venv/bin"
+  "python.formatting.provider": "none",
+  "python.autoComplete.extraPaths": ["${workspaceFolder}/.venv/bin"],
+  "python.analysis.extraPaths": ["${workspaceFolder}/.venv/bin"],
+  "flake8.args": [
+    "--max-complexity=15",
+    "--max-line-length=119",
+    "--ignore=E203,E501,W503"
   ],
+  "black-formatter.args": ["--line-length=119"]
 }
