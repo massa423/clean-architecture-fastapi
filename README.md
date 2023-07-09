@@ -1,17 +1,18 @@
 ## 概要
 
-クリーンアーキテクチャ(Clean Architecture)で実装したFastAPIベースのシンプルな
+クリーンアーキテクチャ(Clean Architecture)で実装した FastAPI ベースのシンプルな
 ユーザ操作(CRUD)API。
+
 ## ローカル開発環境構築
 
 ### 前提
 
-* Python 3.9
-* sqlite3
+- Python 3.11
+- sqlite3
 
 ### アプリケーション環境構築
 
-Pythonライブラリのインストール。
+Python ライブラリのインストール。
 
 ```
 $ pip install poetry
@@ -19,14 +20,14 @@ $ pip install poetry
 
 ### データベース初期化
 
-#### DBを初期化
+#### DB を初期化
 
 ```
 $ export PYTHONPATH="$(pwd):$PYTHONPATH"
 $ python app/init_db.py
 ```
 
-#### 作成されたDBの確認
+#### 作成された DB の確認
 
 ```
 $ sqlite3 sample_db.sqlite3
@@ -55,20 +56,20 @@ $ uvicorn app.main:app --reload
 
 http://127.0.0.1:8000/docs へアクセス。
 
-
-## Docker環境構築
+## Docker 環境構築
 
 ### 前提
 
-* postgresql (Mac)
-  * `brew install postgresql`
-* Docker
+- postgresql (Mac)
+  - `brew install postgresql`
+- Docker
 
-  * [Docker Desktop for Mac](https://docs.docker.com/docker-for-mac/install/)
-  * [Docker Desktop for Windows](https://docs.docker.com/docker-for-windows/install/)
-  * [Server](https://docs.docker.com/engine/install/)
-* docker-compose
-  * Desktop版であればdocker-composeが同梱されているが、Server版の場合は別途[インストール](https://docs.docker.com/compose/install/)が必要。
+  - [Docker Desktop for Mac](https://docs.docker.com/docker-for-mac/install/)
+  - [Docker Desktop for Windows](https://docs.docker.com/docker-for-windows/install/)
+  - [Server](https://docs.docker.com/engine/install/)
+
+- docker-compose
+  - Desktop 版であれば docker-compose が同梱されているが、Server 版の場合は別途[インストール](https://docs.docker.com/compose/install/)が必要。
 
 ### コンテナ作成
 
@@ -98,7 +99,7 @@ postgres   docker-entrypoint.sh postgres    Up      5432/tcp
 $ docker exec -it -e PYTHONPATH="/app:$PYTHONPATH" api poetry run python app/init_db.py
 ```
 
-#### 作成されたDBの確認
+#### 作成された DB の確認
 
 ```
 $ docker-compose exec db psql -U postgres testdb
@@ -153,9 +154,9 @@ app
 
 ## 参考
 
-* [FastAPI](https://fastapi.tiangolo.com/)
-  * [tiangolo/fastapi (Github)](https://github.com/tiangolo/fastapi)
-  * [tiangolo/full-stack-fastapi-postgresql (Github)](https://github.com/tiangolo/full-stack-fastapi-postgresql)
-  * [nsidnev/fastapi-realworld-example-app (Github)](https://github.com/nsidnev/fastapi-realworld-example-app)
-* [Starlette](https://www.starlette.io/)
-* [Pydantic](https://pydantic-docs.helpmanual.io/)
+- [FastAPI](https://fastapi.tiangolo.com/)
+  - [tiangolo/fastapi (Github)](https://github.com/tiangolo/fastapi)
+  - [tiangolo/full-stack-fastapi-postgresql (Github)](https://github.com/tiangolo/full-stack-fastapi-postgresql)
+  - [nsidnev/fastapi-realworld-example-app (Github)](https://github.com/nsidnev/fastapi-realworld-example-app)
+- [Starlette](https://www.starlette.io/)
+- [Pydantic](https://pydantic-docs.helpmanual.io/)
