@@ -146,12 +146,7 @@ class UserRepositoryImpl(UserRepository):
             logger.info("db connection closed.")
 
         try:
-            created_user = (
-                db.session.query(User)
-                .filter(User.name == name)
-                .order_by(User.id.desc())
-                .first()
-            )
+            created_user = db.session.query(User).filter(User.name == name).order_by(User.id.desc()).first()
         except SQLAlchemyError:
             raise NoContentError
         finally:
@@ -194,11 +189,7 @@ class UserRepositoryImpl(UserRepository):
 
         # 事前に対象ユーザの存在確認
         try:
-            user = (
-                db.session.query(User)
-                .filter(User.id == data_to_be_updated["id"])
-                .first()
-            )
+            user = db.session.query(User).filter(User.id == data_to_be_updated["id"]).first()
         except SQLAlchemyError:
             raise
         finally:
@@ -213,15 +204,11 @@ class UserRepositoryImpl(UserRepository):
 
         # パスワード暗号化
         if data_to_be_updated.get("password") is not None:
-            data_to_be_updated["password"] = encrypt_password_to_sha256(
-                data_to_be_updated["password"]
-            )
+            data_to_be_updated["password"] = encrypt_password_to_sha256(data_to_be_updated["password"])
 
         # アップデート
         try:
-            db.session.query(User).filter(User.id == data_to_be_updated["id"]).update(
-                data_to_be_updated
-            )
+            db.session.query(User).filter(User.id == data_to_be_updated["id"]).update(data_to_be_updated)
             db.session.commit()
         except IntegrityError as e:
             db.session.rollback()
@@ -233,11 +220,7 @@ class UserRepositoryImpl(UserRepository):
             logger.info("db connection closed.")
 
         try:
-            updated_user = (
-                db.session.query(User)
-                .filter(User.id == data_to_be_updated["id"])
-                .first()
-            )
+            updated_user = db.session.query(User).filter(User.id == data_to_be_updated["id"]).first()
         except SQLAlchemyError:
             raise
         finally:

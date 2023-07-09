@@ -1,10 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from pydantic import (
-    BaseModel,
-    Field,
-    EmailStr,
-    parse_obj_as,
-)
+from pydantic import BaseModel, Field, EmailStr, parse_obj_as
 from typing import Optional
 
 from app.domains.user import User
@@ -21,14 +16,14 @@ class UserUpdateInputData(BaseModel):
     name: Optional[str] = Field(
         None,
         min_length=settings.NAME_MIN_LENGTH,
-        regex=settings.AVAILABLE_NAME_CHARACTER,
+        pattern=settings.AVAILABLE_NAME_CHARACTER,
         example="user",
     )
     password: Optional[str] = Field(
         None,
         min_length=settings.PASSWORD_MIN_LENGTH,
         max_length=settings.PASSWORD_MAX_LENGTH,
-        regex=settings.AVAILABLE_PASSWORD_CHARACTER,
+        pattern=settings.AVAILABLE_PASSWORD_CHARACTER,
         example="password",
     )
     email: Optional[EmailStr]
@@ -52,9 +47,7 @@ class UserUpdateInteractorImpl(UserUpdateInteractor):
     UserUpdateInteractorImpl
     """
 
-    def handle(
-        self, id: int, user_input: UserUpdateInputData
-    ) -> Optional[UserOutputData]:
+    def handle(self, id: int, user_input: UserUpdateInputData) -> Optional[UserOutputData]:
         """
         handle
         """
@@ -71,9 +64,7 @@ class UserUpdateInteractorImpl(UserUpdateInteractor):
 
         # idしかない場合はバリデーションエラー
         if len(data_to_be_updated) == 1:
-            raise ValueError(
-                f"Specify at least one field to be updated: {', '.join(user_input.dict().keys())}"
-            )
+            raise ValueError(f"Specify at least one field to be updated: {', '.join(user_input.dict().keys())}")
 
         data = injector.user_repository().update_user(data_to_be_updated)
 
