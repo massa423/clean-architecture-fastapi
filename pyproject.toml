@@ -7,7 +7,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = "^0.100.0"
+fastapi = "^0.115.0"
 SQLAlchemy = "^2.0.18"
 uvicorn = "^0.22.0"
 email-validator = "^2.0.0.post2"
