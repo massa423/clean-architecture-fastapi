@@ -22,7 +22,7 @@ pydantic-settings = "^2.0.1"
 pgsql = ["psycopg2"]
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.0"
+pytest = "^8.0.0"
 mypy = "^1.4.1"
 flake8 = "^7.0.0"
 black = "^25.0.0"
