@@ -2,5 +2,33 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "schedule": ["on the first day of the month"],
+  "enabledManagers": ["dockerfile", "docker-compose", "poetry"],
+  "prConcurrentLimit": 5,
+  "platformAutomerge": true,
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "labels": ["dependencies", "patch"]
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "automerge": false,
+      "labels": ["dependencies", "minor"]
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "labels": ["dependencies", "major"]
+    },
+    {
+      "matchCategories": ["security"],
+      "matchSeverity": ["high", "critical"],
+      "schedule": ["at any time"],
+      "automerge": true,
+      "labels": ["security", "high-severity"]
+    }
   ]
 }
