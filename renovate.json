@@ -4,9 +4,14 @@
     "config:recommended"
   ],
   "schedule": ["on the first day of the month"],
-  "enabledManagers": ["dockerfile", "docker-compose", "uv"],
+  "enabledManagers": ["dockerfile", "docker-compose", "pep621"],
   "prConcurrentLimit": 5,
   "platformAutomerge": true,
+  "vulnerabilityAlerts": {
+    "schedule": ["at any time"],
+    "automerge": true,
+    "labels": ["security"]
+  },
   "packageRules": [
     {
       "matchUpdateTypes": ["patch"],
@@ -22,13 +27,6 @@
       "matchUpdateTypes": ["major"],
       "automerge": false,
       "labels": ["dependencies", "major"]
-    },
-    {
-      "isVulnerabilityAlert": true,
-      "matchVulnerabilitySeverities": ["high", "critical"],
-      "schedule": ["at any time"],
-      "automerge": true,
-      "labels": ["security", "high-severity"]
     }
   ]
 }
