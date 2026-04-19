@@ -8,14 +8,14 @@ A simple user CRUD API built with FastAPI, implemented following Clean Architect
 
 ### Prerequisites
 
-- Poetry >= 2.0
+- uv >= 0.5
 - Python >= 3.11
 - sqlite3
 
 ### Install Dependencies
 
 ```
-$ pip install poetry
+$ uv sync
 ```
 
 ### Database Initialization
@@ -89,14 +89,14 @@ $ docker-compose up -d
 $ docker-compose ps                                                                    master ◼
   Name                Command               State            Ports
 ---------------------------------------------------------------------------
-api        poetry run uvicorn app.mai ...   Up      0.0.0.0:8000->8000/tcp
+api        uv run uvicorn app.mai ...      Up      0.0.0.0:8000->8000/tcp
 postgres   docker-entrypoint.sh postgres    Up      5432/tcp
 ```
 
 ### Initialize the Database
 
 ```
-$ docker exec -it -e PYTHONPATH="/app:$PYTHONPATH" api poetry run python app/init_db.py
+$ docker exec -it -e PYTHONPATH="/app:$PYTHONPATH" api uv run python app/init_db.py
 ```
 
 #### Verify the DB

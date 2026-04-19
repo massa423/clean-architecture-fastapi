@@ -4,7 +4,7 @@
     "config:recommended"
   ],
   "schedule": ["on the first day of the month"],
-  "enabledManagers": ["dockerfile", "docker-compose", "poetry"],
+  "enabledManagers": ["dockerfile", "docker-compose", "uv"],
   "prConcurrentLimit": 5,
   "platformAutomerge": true,
   "packageRules": [
