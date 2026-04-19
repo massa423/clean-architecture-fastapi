@@ -24,8 +24,8 @@
       "labels": ["dependencies", "major"]
     },
     {
-      "matchCategories": ["security"],
-      "matchSeverity": ["high", "critical"],
+      "isVulnerabilityAlert": true,
+      "matchVulnerabilitySeverities": ["high", "critical"],
       "schedule": ["at any time"],
       "automerge": true,
       "labels": ["security", "high-severity"]
