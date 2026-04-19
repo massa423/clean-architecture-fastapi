@@ -1,46 +1,47 @@
-## Overview
+## 概要
 
-A simple user CRUD API built with FastAPI, implemented following Clean Architecture principles.
+クリーンアーキテクチャ(Clean Architecture)で実装した FastAPI ベースのシンプルな
+ユーザ操作(CRUD)API。
 
-[日本語版はこちら](docs/README.ja.md)
+## ローカル開発環境構築
 
-## Local Development Setup
-
-### Prerequisites
+### 前提
 
 - Poetry >= 2.0
 - Python >= 3.11
 - sqlite3
 
-### Install Dependencies
+### アプリケーション環境構築
+
+Python ライブラリのインストール。
 
 ```
 $ pip install poetry
 ```
 
-### Database Initialization
+### データベース初期化
 
-#### Initialize the DB
+#### DB を初期化
 
 ```
 $ export PYTHONPATH="$(pwd):$PYTHONPATH"
 $ python app/init_db.py
 ```
 
-#### Verify the DB
+#### 作成された DB の確認
 
 ```
 $ sqlite3 sample_db.sqlite3
 ```
 
-Check tables:
+テーブルの確認。
 
 ```
 > .tables
 users
 ```
 
-Check records:
+レコードの確認。
 
 ```
 > select * from users;
@@ -48,17 +49,17 @@ Check records:
 2|octopus|5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8|octopus@example.com|2021-01-11 22:35:50.034306|2021-01-11 22:35:50.034306
 ```
 
-### Start the Application
+### アプリケーション起動
 
 ```
 $ uvicorn app.main:app --reload
 ```
 
-Visit http://127.0.0.1:8000/docs.
+http://127.0.0.1:8000/docs へアクセス。
 
-## Docker Setup
+## Docker 環境構築
 
-### Prerequisites
+### 前提
 
 - postgresql (Mac)
   - `brew install postgresql`
@@ -69,20 +70,20 @@ Visit http://127.0.0.1:8000/docs.
   - [Server](https://docs.docker.com/engine/install/)
 
 - docker-compose
-  - Included with Docker Desktop. For server installs, [install separately](https://docs.docker.com/compose/install/).
+  - Desktop 版であれば docker-compose が同梱されているが、Server 版の場合は別途[インストール](https://docs.docker.com/compose/install/)が必要。
 
-### Create Containers
+### コンテナ作成
 
-#### Configure Environment Variables
+#### 環境変数の設定
 
-Copy and edit the sample env files:
+`.env-app.sample`、`.env-postgresql.sample`をリネームし、適宜編集する。
 
 ```
 $ cp -p .env-app.sample .env-app
 $ cp -p .env-postgresql.sample .env-postgresql
 ```
 
-#### Start Containers
+#### コンテナ起動
 
 ```
 $ docker-compose up -d
@@ -93,19 +94,19 @@ api        poetry run uvicorn app.mai ...   Up      0.0.0.0:8000->8000/tcp
 postgres   docker-entrypoint.sh postgres    Up      5432/tcp
 ```
 
-### Initialize the Database
+### データベースの初期化
 
 ```
 $ docker exec -it -e PYTHONPATH="/app:$PYTHONPATH" api poetry run python app/init_db.py
 ```
 
-#### Verify the DB
+#### 作成された DB の確認
 
 ```
 $ docker-compose exec db psql -U postgres testdb
 ```
 
-Check tables:
+テーブルの確認。
 
 ```
 # \dt
@@ -116,7 +117,7 @@ Check tables:
 (1 row)
 ```
 
-Check records:
+レコードの確認。
 
 ```
 # select * from users;
@@ -127,32 +128,32 @@ Check records:
 (2 rows)
 ```
 
-Visit http://127.0.0.1:8000/docs.
+http://127.0.0.1:8000/docs へアクセス。
 
-## Running Tests
+## テスト実行
 
 ```
 $ pytest
 ```
 
-## Project Structure
+## プロジェクトの構造
 
 ```
 app
-├── api                - API layer
-│   └── v1             - API v1
-│       └── endpoints  - Endpoint handlers
-├── core               - Config, logger, etc.
+├── api                - API関連
+│   └── v1             - API v1関連
+│       └── endpoints  - APIのエンドポイントに関する処理
+├── core               - configやロガーなど
 ├── domains            - Enterprise Business Rules
-├── exceptions         - Custom exceptions
-├── injector           - Dependency injection
+├── exceptions         - 例外
+├── injector           - 依存性注入
 ├── interfaces         - Interface Adapters
-│   └── gateways       - External resource access (DB, etc.)
+│   └── gateways       - DB等の外部資源とのやりとりを行う
 └── usecases           - Application Business Rules
-    └── users          - User operations
+    └── users          - ユーザ操作系処理
 ```
 
-## References
+## 参考
 
 - [FastAPI](https://fastapi.tiangolo.com/)
   - [tiangolo/fastapi (Github)](https://github.com/tiangolo/fastapi)
