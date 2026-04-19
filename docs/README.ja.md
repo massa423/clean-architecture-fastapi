@@ -7,7 +7,7 @@
 
 ### 前提
 
-- Poetry >= 2.0
+- uv >= 0.5
 - Python >= 3.11
 - sqlite3
 
@@ -16,7 +16,7 @@
 Python ライブラリのインストール。
 
 ```
-$ pip install poetry
+$ uv sync
 ```
 
 ### データベース初期化
@@ -90,14 +90,14 @@ $ docker-compose up -d
 $ docker-compose ps                                                                    master ◼
   Name                Command               State            Ports
 ---------------------------------------------------------------------------
-api        poetry run uvicorn app.mai ...   Up      0.0.0.0:8000->8000/tcp
+api        uv run uvicorn app.mai ...      Up      0.0.0.0:8000->8000/tcp
 postgres   docker-entrypoint.sh postgres    Up      5432/tcp
 ```
 
 ### データベースの初期化
 
 ```
-$ docker exec -it -e PYTHONPATH="/app:$PYTHONPATH" api poetry run python app/init_db.py
+$ docker exec -it -e PYTHONPATH="/app:$PYTHONPATH" api uv run python app/init_db.py
 ```
 
 #### 作成された DB の確認
