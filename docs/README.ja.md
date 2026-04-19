@@ -52,10 +52,21 @@ users
 ### アプリケーション起動
 
 ```
-$ uvicorn app.main:app --reload
+$ uv run task dev
 ```
 
 http://127.0.0.1:8000/docs へアクセス。
+
+## 開発タスク
+
+[taskipy](https://github.com/taskipy/taskipy) で利用できるタスク:
+
+| タスク | コマンド | 説明 |
+|--------|---------|------|
+| `uv run task dev` | `uvicorn app.main:app --reload` | 開発サーバ起動 |
+| `uv run task lint` | `flake8 .` | リント実行 |
+| `uv run task format` | `black .` | コードフォーマット |
+| `uv run task typecheck` | `mypy .` | 型チェック実行 |
 
 ## Docker 環境構築
 
