@@ -33,6 +33,7 @@ dev = [
     "isort>=6.0.0",
     "requests>=2.31.0",
     "httpx>=0.28.1",
+    "taskipy>=1.14.1",
 ]
 
 [tool.uv]
@@ -40,3 +41,9 @@ package = false
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+
+[tool.taskipy.tasks]
+dev = "uvicorn app.main:app --reload"
+lint = "flake8 ."
+format = "black ."
+typecheck = "mypy ."

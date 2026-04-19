@@ -51,10 +51,21 @@ Check records:
 ### Start the Application
 
 ```
-$ uvicorn app.main:app --reload
+$ uv run task dev
 ```
 
 Visit http://127.0.0.1:8000/docs.
+
+## Development Tasks
+
+Available tasks via [taskipy](https://github.com/taskipy/taskipy):
+
+| Task | Command | Description |
+|------|---------|-------------|
+| `uv run task dev` | `uvicorn app.main:app --reload` | Start dev server |
+| `uv run task lint` | `flake8 .` | Run linter |
+| `uv run task format` | `black .` | Format code |
+| `uv run task typecheck` | `mypy .` | Run type checker |
 
 ## Docker Setup
 
